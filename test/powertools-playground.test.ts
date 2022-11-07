@@ -1,17 +1,10 @@
-// import * as cdk from 'aws-cdk-lib';
-// import { Template } from 'aws-cdk-lib/assertions';
-// import * as PowertoolsPlayground from '../lib/powertools-playground-stack';
+import { Context } from "aws-lambda";
+// Note that the env variable is set before importing the function, which means it's set before `Logger` is initialized
+process.env.POWERTOOLS_DEV = "true";
+import { handler } from "../lib/powertools-playground.function";
 
-// example test. To run these tests, uncomment this file along with the
-// example resource in lib/powertools-playground-stack.ts
-test('SQS Queue Created', () => {
-//   const app = new cdk.App();
-//     // WHEN
-//   const stack = new PowertoolsPlayground.PowertoolsPlaygroundStack(app, 'MyTestStack');
-//     // THEN
-//   const template = Template.fromStack(stack);
-
-//   template.hasResourceProperties('AWS::SQS::Queue', {
-//     VisibilityTimeout: 300
-//   });
+describe("Sample Test", () => {
+  test("does stuff", async () => {
+    await handler({ test: "ok " }, {} as unknown as Context);
+  });
 });

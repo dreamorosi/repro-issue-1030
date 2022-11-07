@@ -1,16 +1,24 @@
-import {
-  Metrics,
-  logMetrics,
-  MetricUnits,
-} from "@aws-lambda-powertools/metrics";
+import { Logger, injectLambdaContext } from "@aws-lambda-powertools/logger";
 import middy from "@middy/core";
 
-const metrics = new Metrics({ namespace: "someName" });
+const logger = new Logger({ serviceName: "someName" });
 
-const middlewares = [logMetrics(metrics)];
+class MyCustomError extends Error {
+  public foo: string;
+
+  constructor(message: string) {
+    super(message);
+    this.foo = "bar";
+  }
+}
 
 export const handler = middy(async () => {
-  metrics.addMetric("successfulBooking", MetricUnits.Count, 1);
-
-  throw new Error("error");
-}).use(middlewares);
+  logger.info("I'm a log entry");
+  try {
+    throw new MyCustomError("error");
+  } catch (err) {
+    if (err instanceof MyCustomError) {
+      logger.error("some error", err);
+    }
+  }
+}).use(injectLambdaContext(logger));
